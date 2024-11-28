@@ -35,7 +35,7 @@ _selects.forEach(el => el.addEventListener('change', event => {
     if (el.id == "product") clearAll();
 }));
 
-_checkboxes.forEach(el => el.addEventListener('change', event => { 
+_checkboxes.forEach(el => el.addEventListener('change', event => {
     createTable();
 }));
 
@@ -49,6 +49,21 @@ function main() {
     masterList = readTextFile("https://esetuk.github.io/repodownloader/res/products.csv");
     parseList();
     createTable();
+}
+
+function readTextFile(file) {
+    let rawFile = new XMLHttpRequest();
+    let allText = "";
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function () {
+        if (rawFile.readyState === 4) {
+            if (rawFile.status === 200 || rawFile.status == 0) {
+                allText = rawFile.responseText;
+            }
+        }
+    }
+    rawFile.send(null);
+    return (allText);
 }
 
 function parseList() {
@@ -120,6 +135,7 @@ function clearAll(){
 }
 
 function createTable() {
+    console.log(listRows);
     const headers = ["Product", "Language", "Version", "Platform", "Architecture", "Path", "Legacy", "", ""];
     const textSearchText = _textSearch.value.toLowerCase();
     const selectedProduct = _product.options[_product.selectedIndex].value;
@@ -142,6 +158,7 @@ function createTable() {
         (!_fullPackage.checked || (_fullPackage.checked && (listRows[index][7].includes("full") && (listRows[index][1] == "ESET Endpoint Antivirus" || listRows[index][1] == "ESET Endpoint Security")) || (listRows[index][1] != "ESET Endpoint Antivirus" && listRows[index][1] != "ESET Endpoint Security"))) && 
         // English filter
         (_englishResults.checked && (listRows[index][3].toLowerCase() == "en_us" || listRows[index][3].toLowerCase() == "multilang") || !_englishResults.checked))
+        // Latest filter
         {
                 for (let j = 0; j < listRows[index].length; j++) {
                     match = false;
@@ -210,21 +227,6 @@ function toast(msg) {
         el.parentNode.removeChild(el);
     }, 3000);
     document.body.appendChild(el);
-}
-
-function readTextFile(file) {
-    let rawFile = new XMLHttpRequest();
-    let allText = "";
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function () {
-        if (rawFile.readyState === 4) {
-            if (rawFile.status === 200 || rawFile.status == 0) {
-                allText = rawFile.responseText;
-            }
-        }
-    }
-    rawFile.send(null);
-    return (allText);
 }
 
 function action(e) {
